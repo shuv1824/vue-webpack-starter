@@ -1,5 +1,8 @@
 const path = require('path')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
 module.exports = {
     entry : './src/app.js',
@@ -7,14 +10,20 @@ module.exports = {
         path : path.resolve(__dirname, '../dist'),
         filename : 'js/app.js'
     },
-    mode : 'development',
+    resolve : {
+        alias : {
+            '@' : path.resolve('./src'),
+            'styles' : path.resolve('./src/assets/styles')
+        },
+        extensions : ['.js', '.vue', '.scss']
+    },
     module : {
         rules : [
             {
                 test : /\.vue$/,
                 loader : 'vue-loader',
                 options : {
-                    extractCSS : true //@todo
+                    extractCSS : process.env.NODE_ENV === "production"
                 }
             },
             {
@@ -26,8 +35,17 @@ module.exports = {
                 }
             },
             {
-                test : /\.scss$/,
+                test : /\.(png|jpg|gif|svg)$/,
+                loader : 'file-loader',
+                options : {
+                    name : '[name].[ext]',
+                    outputPath : 'img/'
+                }
+            },
+            {
+                test :  /\.scss$/,
                 use : [
+                    MiniCssExtractPlugin.loader,
                     {
                         loader: 'css-loader'
                     },
@@ -39,10 +57,14 @@ module.exports = {
         ]
     },
     plugins: [
-        new VueLoaderPlugin()
-    ],
-    devServer : {
-        compress : true,
-        overlay : true
-    }
+        new VueLoaderPlugin(),
+        new MiniCssExtractPlugin({
+            filename: 'css/app.css'
+        }),
+        new HtmlWebpackPlugin({
+            inject: true,
+            filename: 'index.html',
+            template: 'index.html'
+        })
+    ]
 }

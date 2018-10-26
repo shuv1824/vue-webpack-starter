@@ -5,7 +5,7 @@
 </template>
 
 <script>
-    import Counter from './app/Counter.vue'
+    import Counter from '@/app/Counter'
 
     export default {
         name : 'app',
@@ -16,5 +16,5 @@
 </script>
 
 <style lang="scss">
-    @import './assets/styles/app.scss';
+    @import '~styles/app';
 </style>
